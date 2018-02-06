@@ -125,6 +125,7 @@ public class BackgroundGeolocationModule extends ReactContextBaseJavaModule impl
 
                         WritableMap out = Arguments.createMap();
                         if (locationProvider != null) out.putInt("locationProvider", locationProvider);
+                        out.putDouble("locationId", location.getLocationId());
                         out.putDouble("time", new Long(location.getTime()).doubleValue());
                         out.putDouble("latitude", location.getLatitude());
                         out.putDouble("longitude", location.getLongitude());
@@ -301,6 +302,12 @@ public class BackgroundGeolocationModule extends ReactContextBaseJavaModule impl
     }
 
     @ReactMethod
+    public void isServiceRunning(Callback success, Callback error) {
+        int isServiceRunning = mIsServiceRunning ? 1 : 0;
+        success.invoke(isServiceRunning);
+    }
+
+    @ReactMethod
     public void showAppSettings() {
         Intent intent = new Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS);
         intent.addCategory(Intent.CATEGORY_DEFAULT);
@@ -355,6 +362,59 @@ public class BackgroundGeolocationModule extends ReactContextBaseJavaModule impl
         } catch (Exception e) {
             log.error("Getting all locations failed: {}", e.getMessage());
             error.invoke("Converting locations to JSON failed.");
+        }
+    }
+
+    @ReactMethod
+    public void getValidLocations(Callback success, Callback error) {
+        WritableArray locationsArray = Arguments.createArray();
+        LocationDAO dao = DAOFactory.createLocationDAO(getContext());
+        try {
+            Collection<BackgroundLocation> locations = dao.getValidLocations();
+            for (BackgroundLocation location : locations) {
+                WritableMap out = Arguments.createMap();
+                Long locationId = location.getLocationId();
+                Integer locationProvider = location.getLocationProvider();
+                if (locationId != null) out.putInt("locationId", Convert.safeLongToInt(locationId));
+                if (locationProvider != null) out.putInt("locationProvider", locationProvider);
+                out.putDouble("time", new Long(location.getTime()).doubleValue());
+                out.putDouble("latitude", location.getLatitude());
+                out.putDouble("longitude", location.getLongitude());
+                out.putDouble("accuracy", location.getAccuracy());
+                out.putDouble("speed", location.getSpeed());
+                out.putDouble("altitude", location.getAltitude());
+                out.putDouble("bearing", location.getBearing());
+
+                locationsArray.pushMap(out);
+            }
+            success.invoke(locationsArray);
+        } catch (Exception e) {
+            log.error("Getting all locations failed: {}", e.getMessage());
+            error.invoke("Converting locations to JSON failed.");
+        }
+    }
+
+    @ReactMethod
+    public void deleteLocation(int locationId, Callback success, Callback error) {
+        LocationDAO dao = DAOFactory.createLocationDAO(getContext());
+        try {
+            dao.deleteLocation(new Long(locationId));
+            success.invoke();
+        } catch (Exception e) {
+            log.error("Delete location failed: {}", e.getMessage());
+            error.invoke("Delete location failed.");
+        }
+    }
+
+    @ReactMethod
+    public void deleteAllLocations(Callback success, Callback error) {
+        LocationDAO dao = DAOFactory.createLocationDAO(getContext());
+        try {
+            dao.deleteAllLocations();
+            success.invoke();
+        } catch (Exception e) {
+            log.error("Delete all locations failed: {}", e.getMessage());
+            error.invoke("Delete all locations failed.");
         }
     }
 

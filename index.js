@@ -49,6 +49,12 @@ var BackgroundGeolocation = {
     RNBackgroundGeolocation.isLocationEnabled(successFn, errorFn);
   },
 
+  isServiceRunning: function(successFn, errorFn) {
+      successFn = successFn || emptyFn;
+      errorFn = errorFn || emptyFn;
+      RNBackgroundGeolocation.isServiceRunning(successFn, errorFn);
+  },
+
   showAppSettings: function() {
     RNBackgroundGeolocation.showAppSettings();
   },
@@ -74,7 +80,7 @@ var BackgroundGeolocation = {
     errorFn = errorFn || emptyFn;
     RNBackgroundGeolocation.getLocations(successFn, errorFn);
   },
-/*
+
   getValidLocations: function(successFn, errorFn) {
     successFn = successFn || emptyFn;
     errorFn = errorFn || emptyFn;
@@ -92,7 +98,7 @@ var BackgroundGeolocation = {
     errorFn = errorFn || emptyFn;
     RNBackgroundGeolocation.deleteAllLocations(successFn, errorFn);
   },
-*/
+
   switchMode: function(modeId, successFn, errorFn) {
     successFn = successFn || emptyFn;
     errorFn = errorFn || emptyFn;

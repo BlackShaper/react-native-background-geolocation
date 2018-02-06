@@ -48,6 +48,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.net.HttpURLConnection;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.Iterator;
 
@@ -336,9 +337,12 @@ public class LocationService extends Service {
             }
         }
 
+        Collection<BackgroundLocation> locations = dao.getValidLocations();
+        BackgroundLocation [] locationArray = locations.toArray(new BackgroundLocation[locations.size()]);
         if (hasConnectivity && config.hasUrl()) {
-            postLocationAsync(location);
+            postLocationAsync(locationArray);
         }
+
 
         Bundle bundle = new Bundle();
         bundle.putParcelable("location", location);
@@ -416,7 +420,7 @@ public class LocationService extends Service {
         task.doInBackground(location);
     }
 
-    public void postLocationAsync(BackgroundLocation location) {
+    public void postLocationAsync(BackgroundLocation... location) {
         PostLocationTask task = new LocationService.PostLocationTask();
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
             task.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, location);

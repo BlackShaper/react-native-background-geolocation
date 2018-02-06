@@ -325,7 +325,7 @@ public class DistanceFilterLocationProvider extends AbstractLocationProvider imp
 
     private Integer calculateDistanceFilter(Float speed) {
         Double newDistanceFilter = (double) config.getDistanceFilter();
-        if (speed < 100) {
+        if (speed < 0) {
             float roundedDistanceFilter = (round(speed / 5) * 5);
             newDistanceFilter = pow(roundedDistanceFilter, 2) + (double) config.getDistanceFilter();
         }
